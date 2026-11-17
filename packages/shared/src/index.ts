@@ -1,4 +1,4 @@
-import { expressionSchema } from "./expression.schema";
+// import { expressionSchema } from "./expression.schema";
 
 export type Expression =
   | { type: "variable"; name: string }
@@ -8,3 +8,15 @@ export type Expression =
   | { type: "not"; expression: Expression };
 
 export type VariableAssignments = Record<string, boolean>;
+
+export { tokenize } from "./tokenizer";
+export type { Token, TokenType } from "./tokenizer";
+
+export { Parser } from "./parser";
+
+export { evaluate } from "./evaluator";
+
+export { toVisualTree } from "./visualizer";
+export type { VisualNode } from "./visualizer";
+
+export { expressionSchema } from "./expression.schema";

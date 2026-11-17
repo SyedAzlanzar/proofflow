@@ -104,7 +104,7 @@ describe("Parser", () => {
     it("should reject an incomplete AND expression", () => {
         const parser = new Parser(tokenize("A AND"));
 
-        expect(() => parser.parse()).toThrow();
+        expect(() => parser.parse()).toThrow("Expected an expression after AND");
     });
 
     it("should reject NOT without an operand", () => {
@@ -116,7 +116,7 @@ describe("Parser", () => {
     it("should reject an expression with a missing closing parenthesis", () => {
         const parser = new Parser(tokenize("(A OR B"));
 
-        expect(() => parser.parse()).toThrow("Expected ')'");
+        expect(() => parser.parse()).toThrow("Missing closing parenthesis ')' at position end of input");
     });
 
     it("should parse nested parentheses", () => {
@@ -146,5 +146,45 @@ describe("Parser", () => {
         const parser = new Parser(tokenize("A AND B C"));
 
         expect(() => parser.parse()).toThrow("Unexpected token 'C'");
+    });
+
+    it("throws a meaningful error when AND has no right operand", () => {
+        const parser = new Parser(tokenize("A AND"));
+
+        expect(() => parser.parse()).toThrow(
+            "Expected an expression after AND"
+        );
+    });
+
+    it("throws a meaningful error when OR has no right operand", () => {
+        const parser = new Parser(tokenize("A OR"));
+
+        expect(() => parser.parse()).toThrow(
+            "Expected an expression after OR"
+        );
+    });
+
+    it("throws a meaningful error when implication has no right operand", () => {
+        const parser = new Parser(tokenize("A ->"));
+
+        expect(() => parser.parse()).toThrow(
+            "Expected an expression after implication (->)"
+        );
+    });
+
+    it("identifies consecutive operators", () => {
+        const parser = new Parser(tokenize("A OR OR B"));
+
+        expect(() => parser.parse()).toThrow(
+            "Unexpected operator 'OR' at position 5. Expected an expression."
+        );
+    });
+
+    it("identifies unexpected trailing variables", () => {
+        const parser = new Parser(tokenize("A B"));
+
+        expect(() => parser.parse()).toThrow(
+            "Unexpected token 'B' at position 2"
+        );
     });
 });

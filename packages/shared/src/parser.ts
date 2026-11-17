@@ -53,7 +53,7 @@ export class Parser {
                 const token = this.peek();
 
                 throw new Error(
-                    `Expected ')' at position ${token?.position ?? "end of input"}`
+                    `Missing closing parenthesis ')' at position ${token?.position ?? "end of input"}`
                 );
             }
 
@@ -61,9 +61,25 @@ export class Parser {
         }
 
         const token = this.peek();
+        const position = token?.position ?? "end of input";
+
+        if (!token) {
+            throw new Error(`Expected an expression at position ${position}`);
+        }
+
+        if (
+            token.type === "AND" ||
+            token.type === "OR" ||
+            token.type === "IMPLIES" ||
+            token.type === "NOT"
+        ) {
+            throw new Error(
+                `Unexpected operator '${token.value}' at position ${position}. Expected an expression.`
+            );
+        }
 
         throw new Error(
-            `Unexpected token '${token?.value ?? "end of input"}' at position ${token?.position ?? "end of input"}`
+            `Unexpected token '${token.value}' at position ${position}`
         );
     }
 
@@ -82,6 +98,10 @@ export class Parser {
         let left = this.parseNot();
 
         while (this.match("AND")) {
+            if (!this.peek()) {
+                throw new Error("Expected an expression after AND");
+            }
+
             const right = this.parseNot();
 
             left = {
@@ -98,6 +118,10 @@ export class Parser {
         let left = this.parseAnd();
 
         while (this.match("OR")) {
+            if (!this.peek()) {
+                throw new Error("Expected an expression after OR");
+            }
+
             const right = this.parseAnd();
 
             left = {
@@ -114,6 +138,10 @@ export class Parser {
         const left = this.parseOr();
 
         if (this.match("IMPLIES")) {
+            if (!this.peek()) {
+                throw new Error("Expected an expression after implication (->)");
+            }
+
             const right = this.parseExpression();
 
             return {
