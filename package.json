@@ -1,0 +1,16 @@
+{
+  "name": "proofflow",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=@proofflow/web",
+    "dev:api": "npm run dev --workspace=@proofflow/api"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}
