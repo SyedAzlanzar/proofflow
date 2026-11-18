@@ -1,18 +1,20 @@
 import { useState } from "react";
 
+import { evaluateProof } from "../services/api.service";
+
 import {
   toVisualTree,
   type Expression,
   type VariableAssignments,
 } from "@proofflow/shared";
 
+import ExpressionEditor from "../components/ExpressionEditor";
+import ProofHistory from "../components/ProofHistory";
 import ASTVisualizer from "../features/expression/ASTVisualizer";
 import CommonMistakes from "../features/expression/CommonMistakes";
 import ExampleExpressions from "../features/expression/ExampleExpressions";
 import VariableAssignment from "../features/expression/VariableAssignment";
-import ExpressionEditor from "../components/ExpressionEditor";
 
-import { evaluateExpression } from "../services/evaluation.service";
 import { parseExpression } from "../services/expression.service";
 import { getVariables } from "../services/variable.service";
 
@@ -26,6 +28,8 @@ function HomePage() {
   const [evaluationResult, setEvaluationResult] = useState<boolean | null>(
     null,
   );
+  const [historyRefresh, setHistoryRefresh] = useState(0);
+
   const [evaluationError, setEvaluationError] = useState<string | null>(null);
   const visualTree = parsedExpression ? toVisualTree(parsedExpression) : null;
   const variables = parsedExpression ? getVariables(parsedExpression) : [];
@@ -77,14 +81,14 @@ function HomePage() {
     setEvaluationError(null);
   }
 
-  function handleEvaluate() {
+  async function handleEvaluate() {
     if (!parsedExpression) return;
 
     try {
-      const result = evaluateExpression(parsedExpression, variableValues);
-
-      setEvaluationResult(result);
+      const response = await evaluateProof(expression, variableValues);
+      setEvaluationResult(response.result);
       setEvaluationError(null);
+      setHistoryRefresh((current) => current + 1);
     } catch (error) {
       setEvaluationResult(null);
 
@@ -96,91 +100,104 @@ function HomePage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-      <header className="border-b border-slate-800 px-8 py-2">
+      <header className="border-b border-slate-800 px-8 py-3">
         <h1 className="text-2xl font-bold">ProofFlow</h1>
         <p className="mt-1 text-sm text-slate-400">
           Interactive propositional logic workspace
         </p>
       </header>
 
-      <section className="mx-auto max-w-6xl px-8 py-6">
-        <h2 className="text-2xl font-semibold">Welcome to ProofFlow</h2>
+      <div className="flex flex-col md:flex-row">
+        {/* Left Sidebar */}
+        <aside className="w-full border-b border-slate-800 md:min-h-[calc(100vh-76px)] md:w-72 md:shrink-0 md:border-b-0 md:border-r">
+          <div className="p-5">
+            <h2 className="mb-4 text-lg font-semibold">Your Proofs</h2>
 
-        <div className="mt-6">
-          <ExpressionEditor
-            value={expression}
-            onChange={handleExpressionChange}
-          />
-          <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <ExampleExpressions onSelect={handleExpressionChange} />
-            <CommonMistakes onSelect={handleExpressionChange} />
+            <ProofHistory refreshTrigger={historyRefresh} />
           </div>
-        </div>
+        </aside>
 
-        {parseError && (
-          <p className="mt-2 text-sm text-red-400">{parseError}</p>
-        )}
+        {/* Main Workspace */}
+        <section className="mx-auto w-full max-w-6xl flex-1 min-w-0 px-6 py-8 md:px-10">
+          <h2 className="text-2xl font-semibold">Welcome to ProofFlow</h2>
 
-        {parsedExpression && (
-          <p className="mt-3 text-sm text-green-400">
-            Expression parsed successfully!
-          </p>
-        )}
-
-        {visualTree && (
-          <div className="mt-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="mb-8 text-lg font-semibold text-white">
-              Expression Structure
-            </h2>
-
-            <div className="overflow-x-auto py-4">
-              <ASTVisualizer node={visualTree} />
-            </div>
-
-            <p className="mt-6 text-xs text-slate-500">
-              This is the syntax tree of your expression, not a verified proof.
-            </p>
-          </div>
-        )}
-
-        {parsedExpression && (
-          <div className="mt-8">
-            <VariableAssignment
-              variables={variables}
-              values={variableValues}
-              onChange={handleVariableChange}
+          <div className="mt-6">
+            <ExpressionEditor
+              value={expression}
+              onChange={handleExpressionChange}
             />
-            <div className="mt-6">
-              <button
-                onClick={handleEvaluate}
-                className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
-              >
-                Evaluate Expression
-              </button>
+
+            <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <ExampleExpressions onSelect={handleExpressionChange} />
+              <CommonMistakes onSelect={handleExpressionChange} />
             </div>
           </div>
-        )}
 
-        {evaluationError && (
-          <p className="mt-4 text-sm text-red-400">{evaluationError}</p>
-        )}
+          {parseError && (
+            <p className="mt-2 text-sm text-red-400">{parseError}</p>
+          )}
 
-        {evaluationResult !== null && (
-          <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-lg font-semibold text-white">
-              Evaluation Result
-            </h2>
-
-            <p
-              className={`mt-3 text-2xl font-bold ${
-                evaluationResult ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {evaluationResult ? "TRUE" : "FALSE"}
+          {parsedExpression && (
+            <p className="mt-3 text-sm text-green-400">
+              Expression parsed successfully!
             </p>
-          </div>
-        )}
-      </section>
+          )}
+
+          {visualTree && (
+            <div className="mt-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <h2 className="mb-8 text-lg font-semibold">
+                Expression Structure
+              </h2>
+
+              <div className="overflow-x-auto py-4">
+                <ASTVisualizer node={visualTree} />
+              </div>
+
+              <p className="mt-6 text-xs text-slate-500">
+                This is the syntax tree of your expression, not a verified
+                proof.
+              </p>
+            </div>
+          )}
+
+          {parsedExpression && (
+            <div className="mt-8">
+              <VariableAssignment
+                variables={variables}
+                values={variableValues}
+                onChange={handleVariableChange}
+              />
+
+              <div className="mt-6">
+                <button
+                  onClick={handleEvaluate}
+                  className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-500"
+                >
+                  Evaluate Expression
+                </button>
+              </div>
+            </div>
+          )}
+
+          {evaluationError && (
+            <p className="mt-4 text-sm text-red-400">{evaluationError}</p>
+          )}
+
+          {evaluationResult !== null && (
+            <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <h2 className="text-lg font-semibold">Evaluation Result</h2>
+
+              <p
+                className={`mt-3 text-2xl font-bold ${
+                  evaluationResult ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {evaluationResult ? "TRUE" : "FALSE"}
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

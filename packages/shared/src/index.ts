@@ -9,14 +9,14 @@ export type Expression =
 
 export type VariableAssignments = Record<string, boolean>;
 
-export { tokenize } from "./tokenizer";
-export type { Token, TokenType } from "./tokenizer";
+export { tokenize } from "./tokenizer.js";
+export type { Token, TokenType } from "./tokenizer.js";
 
-export { Parser } from "./parser";
+export { Parser } from "./parser.js";
 
-export { evaluate } from "./evaluator";
+export { evaluate } from "./evaluator.js";
 
-export { toVisualTree } from "./visualizer";
-export type { VisualNode } from "./visualizer";
+export { toVisualTree } from "./visualizer.js";
+export type { VisualNode } from "./visualizer.js";
 
-export { expressionSchema } from "./expression.schema";
+export { expressionSchema } from "./expression.schema.js";

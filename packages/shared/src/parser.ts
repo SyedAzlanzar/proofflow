@@ -1,6 +1,6 @@
 
-import type { Token } from "./tokenizer";
-import type { Expression } from "./index";
+import type { Token } from "./tokenizer.js";
+import type { Expression } from "./index.js";
 
 export class Parser {
     private tokens: Token[];

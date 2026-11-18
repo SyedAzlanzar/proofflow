@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import type { Expression } from "./index";
+import type { Expression } from "./index.js";
 
 export const expressionSchema: z.ZodType<Expression> = z.lazy(() =>
   z.discriminatedUnion("type", [
