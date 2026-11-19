@@ -56,7 +56,7 @@ export default function ProofHistory({
                   Result: {proof.result ? "True" : "False"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {new Date(proof.created_at + "Z").toLocaleString()}
+                  {new Date(proof.createdAt).toLocaleString()}{" "}
                 </p>
               </div>
 

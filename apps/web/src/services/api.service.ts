@@ -12,7 +12,7 @@ export interface Proof {
     expression: string;
     variables: string;
     result: number;
-    created_at: string;
+    createdAt: string;
 }
 
 export async function evaluateProof(
