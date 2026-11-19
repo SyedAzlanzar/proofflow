@@ -32,7 +32,7 @@ function VariableAssignment({
               onChange={(event) =>
                 onChange(variable, event.target.value === "true")
               }
-              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-blue-500"
+              className="rounded-md cursor-pointer border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-blue-500"
             >
               <option value="true">True</option>
               <option value="false">False</option>

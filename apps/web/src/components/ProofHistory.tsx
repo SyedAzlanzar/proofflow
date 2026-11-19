@@ -62,7 +62,7 @@ export default function ProofHistory({
 
               <button
                 onClick={() => handleDelete(proof._id)}
-                className="rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-500"
+                className="rounded-lg bg-red-600 cursor-pointer px-3 py-2 text-sm text-white hover:bg-red-500"
               >
                 Delete
               </button>
