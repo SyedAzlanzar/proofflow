@@ -104,7 +104,7 @@ function HomePage() {
       <header className="shrink-0 border-b border-slate-800 px-8 py-3 z-10 bg-slate-950">
         <h1 className="text-2xl font-bold">ProofFlow</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Interactive propositional logic workspace
+          Interactive propositional logic workspace.
         </p>
       </header>
 
