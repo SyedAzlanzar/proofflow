@@ -40,9 +40,7 @@ export default function ProofHistory({
   return (
     <section className="space-y-4">
       <h2 className="mb-4 text-xl font-semibold">Proof History</h2>
-
-      {error && <p className="mb-3 text-red-500">{error}</p>}
-
+      {/* {error && <p className="mb-3 text-red-500">{error}</p>} */}
       {proofs.length === 0 ? (
         <p className="text-gray-400">No saved proofs yet.</p>
       ) : (

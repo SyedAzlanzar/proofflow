@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=@proofflow/web",
-    "dev:api": "npm run dev --workspace=@proofflow/api"
+    "dev:api": "npm run dev --workspace=@proofflow/api",
+    "build": "npm run build --workspace=@proofflow/shared && npm run build --workspace=@proofflow/api"
   },
   "dependencies": {
     "zod": "^4.6.7"

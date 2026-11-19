@@ -1,44 +1,49 @@
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import type Database from "better-sqlite3";
-import { createDatabase } from "./db.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { MongoClient, type Collection } from "mongodb";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import type { ProofDocument } from "./db.js";
 
 describe("Proof database", () => {
-    let db: Database.Database;
+    let mongod: MongoMemoryServer;
+    let client: MongoClient;
+    let collection: Collection<ProofDocument>;
 
-    beforeEach(() => {
-        db = createDatabase(":memory:");
+    beforeAll(async () => {
+        mongod = await MongoMemoryServer.create();
+
+        client = new MongoClient(mongod.getUri());
+        await client.connect();
+
+        collection = client.db("proofflow_test")
+            .collection<ProofDocument>("proofs");
     });
 
-    afterEach(() => {
-        db.close();
+    afterAll(async () => {
+        await client.close();
+        await mongod.stop();
     });
 
-    it("should save and retrieve a proof", () => {
-        const insert = db.prepare(`
-      INSERT INTO proofs (expression, variables, result)
-      VALUES (?, ?, ?)
-    `);
-
-        const info = insert.run(
-            "A AND B",
-            JSON.stringify({ A: true, B: false }),
-            0
-        );
-
-        const proof = db.prepare(
-            "SELECT * FROM proofs WHERE id = ?"
-        ).get(info.lastInsertRowid) as {
-            expression: string;
-            variables: string;
-            result: number;
+    it("should save and retrieve a proof", async () => {
+        const proof: ProofDocument = {
+            expression: "A AND B",
+            variables: { A: true, B: false },
+            result: false,
+            createdAt: new Date(),
         };
 
-        expect(proof.expression).toBe("A AND B");
-        expect(JSON.parse(proof.variables)).toEqual({
+        const insert = await collection.insertOne(proof);
+
+        const savedProof = await collection.findOne({
+            _id: insert.insertedId,
+        });
+
+        expect(savedProof).not.toBeNull();
+        expect(savedProof?.expression).toBe("A AND B");
+        expect(savedProof?.variables).toEqual({
             A: true,
             B: false,
         });
-        expect(proof.result).toBe(0);
+        expect(savedProof?.result).toBe(false);
     });
 });
