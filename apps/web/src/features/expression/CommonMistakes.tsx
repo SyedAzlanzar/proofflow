@@ -42,7 +42,7 @@ function CommonMistakes({ onSelect }: CommonMistakesProps) {
           <button
             key={mistake.expression}
             onClick={() => onSelect(mistake.expression)}
-            className="flex w-full items-center justify-between gap-3 rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-left transition hover:border-red-500"
+            className="flex w-full items-center cursor-pointer justify-between gap-3 rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-left transition hover:border-red-500"
           >
             <span className="font-mono text-xs text-slate-300">
               {mistake.expression}
