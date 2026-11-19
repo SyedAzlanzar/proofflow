@@ -8,7 +8,7 @@ export interface EvaluateResponse {
 }
 
 export interface Proof {
-    id: number;
+    _id: number;
     expression: string;
     variables: string;
     result: number;

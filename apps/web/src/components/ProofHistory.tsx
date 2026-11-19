@@ -25,7 +25,7 @@ export default function ProofHistory({
   async function handleDelete(id: number) {
     try {
       await deleteProof(id);
-      setProofs((current) => current.filter((proof) => proof.id !== id));
+      setProofs((current) => current.filter((proof) => proof._id !== id));
     } catch {
       setError("Failed to delete proof.");
     }
@@ -47,7 +47,7 @@ export default function ProofHistory({
         <div className="space-y-4">
           {proofs.map((proof) => (
             <div
-              key={proof.id}
+              key={proof._id}
               className="flex items-center justify-between rounded-lg bg-gray-800 p-4"
             >
               <div>
@@ -61,7 +61,7 @@ export default function ProofHistory({
               </div>
 
               <button
-                onClick={() => handleDelete(proof.id)}
+                onClick={() => handleDelete(proof._id)}
                 className="rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-500"
               >
                 Delete
