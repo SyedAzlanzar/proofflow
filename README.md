@@ -1,106 +1,219 @@
 # ProofFlow
 
-**An interactive propositional logic workspace built with React, TypeScript, and Node.js.**
+**An interactive propositional logic workspace built with React, TypeScript, Node.js, and Effect.**
 
-ProofFlow allows users to write logical expressions, explore their abstract syntax trees (ASTs), assign values to logical variables, and evaluate expressions interactively.
+ProofFlow allows users to write propositional logic expressions, explore their Abstract Syntax Trees (ASTs), assign Boolean values to variables, and evaluate expressions interactively. Evaluated expressions can also be saved and managed through a persistent backend.
 
-The project is designed as a lightweight foundation for exploring formal logic and proof-oriented workflows.
+**Live Demo:** https://proofflow-workspace.vercel.app/
+
+**Repository:** https://github.com/SyedAzlanzar/proofflow
+
+---
 
 ## Features
 
-- **Logical Expression Editor:** Write propositional logic expressions using `AND`, `OR`, `NOT`, and implication (`->`).
-- **Tokenizer:** Converts input expressions into tokens for parsing.
-- **Recursive Descent Parser:** Parses expressions while respecting operator precedence and associativity.
-- **AST Visualization:** Displays the abstract syntax tree representing the parsed expression.
-- **Variable Extraction:** Automatically identifies unique variables used in an expression.
-- **Variable Assignments:** Assign Boolean values (`TRUE` or `FALSE`) to each variable.
-- **Expression Evaluation:** Evaluates logical expressions based on the assigned values.
-- **Input Validation:** Detects malformed expressions and reports meaningful parsing errors.
-- **Example Expressions:** Provides valid and invalid examples to explore parser behavior.
+- **Logical Expression Editor:** Write expressions using `AND`, `OR`, `NOT`, and implication (`->`).
+- **Tokenizer:** Converts the input expression into a sequence of tokens.
+- **Recursive-Descent Parser:** Parses tokens into an AST while respecting operator precedence and associativity.
+- **AST Visualization:** Explore the syntactic structure of logical expressions.
+- **Variable Extraction:** Automatically identifies variables used in an expression.
+- **Variable Assignments:** Assign `TRUE` or `FALSE` to individual variables.
+- **Expression Evaluation:** Evaluates expressions based on the provided variable assignments.
+- **Input Validation:** Detects malformed expressions and reports parsing errors.
+- **Proof History:** View previously evaluated expressions.
+- **Persistent Storage:** Save, retrieve, and delete evaluated expressions using MongoDB.
+
+## Supported Logical Operators
+
+| Operator | Meaning     | Example   |
+| -------- | ----------- | --------- |
+| `NOT`    | Negation    | `NOT A`   |
+| `AND`    | Conjunction | `A AND B` |
+| `OR`     | Disjunction | `A OR B`  |
+| `->`     | Implication | `A -> B`  |
+
+Operator precedence:
+
+1. `NOT`
+2. `AND`
+3. `OR`
+4. `IMPLIES`
+
+Implication is right-associative.
+
+## Screenshots
+
+### Main Workspace
+
+![Expression evaluation and AST](docs/screenshots/proof-history.png)
+
+### Expression Evaluation and AST Visualization
+
+![ProofFlow workspace](docs/screenshots/workspace.png)
+
+
+## Architecture
+
+ProofFlow is organized as an npm monorepo with separate frontend, backend, and shared packages.
+
+```mermaid
+flowchart TD
+    U[User] <--> FE[React + TypeScript Frontend]
+    FE <--> API[Node.js + Effect API]
+    API <--> DB[(MongoDB Atlas)]
+
+    SH[Shared Package]
+    SH --> FE
+    SH --> API
+
+    subgraph Shared["packages/shared"]
+        SH
+        T[Tokenizer]
+        P[Parser]
+        AST[AST]
+        E[Evaluator]
+        Z[Zod Schemas and Types]
+    end
+```
+
+The shared package contains the core logic and reusable types used by both the frontend and backend.
+
+### Deployment
+
+| Component   | Platform      |
+| ----------- | ------------- |
+| Frontend    | Vercel        |
+| Backend API | Railway       |
+| Database    | MongoDB Atlas |
 
 ## Technology Stack
 
-### Frontend
+**Frontend**
 
 - React 19
 - TypeScript
 - Vite
 - Tailwind CSS v4
 
-### Shared Package
+**Backend**
+
+- Node.js
+- TypeScript
+- Effect
+- MongoDB
+
+**Shared Package**
 
 - TypeScript
 - Zod
 - Vitest
 
-### Planned Backend
-
-
-- Node.js
-- TypeScript
-- Effect (Effect-TS)
-
-### Development Tools
+**Development and Testing**
 
 - npm Workspaces
 - Git
-- ESLint
 - Vitest
 
 ## Project Structure
 
 ```text
 proofflow/
-|-- apps/
-|   |-- web/                  # React frontend
-|   |-- api/                  # Node.js backend (planned)
-|
-|-- packages/
-|   |-- shared/               # Shared types, schemas, parser and evaluator
-|
-|-- package.json              # Root workspace configuration
-|-- package-lock.json
-|-- tsconfig.base.json        # Shared TypeScript configuration
-|-- README.md
+├── apps/
+│   ├── web/                 # React frontend
+│   └── api/                 # Node.js backend
+│
+├── packages/
+│   └── shared/              # Shared logic and types
+│       └── src/
+│           ├── tokenizer/
+│           ├── parser/
+│           ├── evaluator/
+│           └── ...
+│
+├── package.json
+├── package-lock.json
+├── tsconfig.base.json
+└── README.md
 ```
-
-The project uses **npm Workspaces** to manage multiple applications and shared packages within a single repository.
-
-The `packages/shared` workspace contains reusable logic and types that can be consumed by both the frontend and backend.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v22 or later recommended)
+- Node.js 22 or later
 - npm
+- MongoDB connection string
 
-### Installation
-
-Clone the repository:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/SyedAzlanzar/proofflow.git
 cd proofflow
 ```
 
-Install dependencies from the project root:
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### Run the Frontend
+### 3. Configure environment variables
 
-Start the Vite development server:
+Configure the environment variables required by the frontend and backend.
+
+Backend:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+PORT=3000
+```
+
+Frontend:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Do not commit environment files or expose database credentials.
+
+### 4. Build the shared package
+
+```bash
+npm run build --workspace=@proofflow/shared
+```
+
+### 5. Start the frontend
 
 ```bash
 npm run dev:web
 ```
 
-Open the local URL displayed in your terminal (usually `http://localhost:5173`).
+### 6. Start the backend
 
-### Run Tests
+In a separate terminal:
+
+```bash
+npm run dev:api
+```
+
+The frontend development server is usually available at `http://localhost:5173`.
+
+## Building
+
+Build the shared package and backend:
+
+```bash
+npm run build
+```
+
+Build the frontend after building the shared package:
+
+```bash
+npm run build --workspace=@proofflow/shared
+npm run build --workspace=@proofflow/web
+```
+
+## Running Tests
 
 Run the shared package tests:
 
@@ -114,29 +227,31 @@ Run the frontend tests:
 npm run test --workspace=@proofflow/web
 ```
 
-## Project Status
+Run the backend tests:
 
-<badge color="success">Frontend implemented</badge> <badge color="warning">Backend in progress</badge>
+```bash
+npm run test --workspace=@proofflow/api
+```
 
-The current frontend supports expression parsing, AST visualization, variable assignments, and logical evaluation.
+## API Endpoints
 
-The backend and persistent storage are planned for the next development phase.
+| Method   | Endpoint      | Description            |
+| -------- | ------------- | ---------------------- |
+| `GET`    | `/`           | API root               |
+| `GET`    | `/health`     | Health check           |
+| `POST`   | `/evaluate`   | Evaluate an expression |
+| `GET`    | `/proofs`     | Retrieve saved proofs  |
+| `GET`    | `/proofs/:id` | Retrieve a proof by ID |
+| `DELETE` | `/proofs/:id` | Delete a saved proof   |
 
-## Current Limitations
+## Project Scope
 
-- Supports a limited subset of propositional logic: `AND`, `OR`, `NOT`, and `->`.
-- Does not currently support quantifiers, predicates, or first-order logic.
-- AST visualization represents the syntactic structure of an expression; it is not a verified proof.
-- Evaluation determines truth values for given variable assignments; it does not perform formal theorem proving.
-- Expressions are currently processed locally in the frontend.
+ProofFlow currently focuses on propositional logic.
 
-## Future Improvements
+It provides expression parsing, AST construction and visualization, Boolean variable assignments, and expression evaluation.
 
-- Backend API using Node.js and Effect.
-- Persistent storage for expressions and evaluation history.
-- Improved proof-oriented workflows.
-- Potential integration with external theorem-proving tools.
+**ProofFlow is not a formal theorem prover or a proof verification system.** It evaluates logical expressions for given variable assignments rather than automatically proving theorems.
 
 ## License
 
-This project is currently under development.
+No license has currently been specified.
