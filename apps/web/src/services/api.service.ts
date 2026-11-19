@@ -1,6 +1,6 @@
 
 const API_BASE_URL =
-    import.meta.env.VITE_API_URL ?? "https://proofflowapi-production-dd2b9df4.up.railway.app";
+    import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 export interface EvaluateResponse {
     id: number;
@@ -8,7 +8,7 @@ export interface EvaluateResponse {
 }
 
 export interface Proof {
-    _id: number;
+    id: number;
     expression: string;
     variables: string;
     result: number;

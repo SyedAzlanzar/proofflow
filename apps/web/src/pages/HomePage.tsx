@@ -111,6 +111,8 @@ function HomePage() {
         {/* Left Sidebar */}
         <aside className="w-full border-b border-slate-800 md:min-h-[calc(100vh-76px)] md:w-72 md:shrink-0 md:border-b-0 md:border-r">
           <div className="p-5">
+            <h2 className="mb-4 text-lg font-semibold">Your Proofs</h2>
+
             <ProofHistory refreshTrigger={historyRefresh} />
           </div>
         </aside>

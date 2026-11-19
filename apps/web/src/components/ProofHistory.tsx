@@ -8,7 +8,7 @@ export default function ProofHistory({
 }) {
   const [proofs, setProofs] = useState<Proof[]>([]);
   const [loading, setLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function loadProofs() {
     try {
@@ -25,7 +25,7 @@ export default function ProofHistory({
   async function handleDelete(id: number) {
     try {
       await deleteProof(id);
-      setProofs((current) => current.filter((proof) => proof._id !== id));
+      setProofs((current) => current.filter((proof) => proof.id !== id));
     } catch {
       setError("Failed to delete proof.");
     }
@@ -40,13 +40,14 @@ export default function ProofHistory({
   return (
     <section className="space-y-4">
       <h2 className="mb-4 text-xl font-semibold">Proof History</h2>
+      {error && <p className="mb-3 text-red-500 opacity-0">{error}</p>}
       {proofs.length === 0 ? (
         <p className="text-gray-400">No saved proofs yet.</p>
       ) : (
         <div className="space-y-4">
           {proofs.map((proof) => (
             <div
-              key={proof._id}
+              key={proof.id}
               className="flex items-center justify-between rounded-lg bg-gray-800 p-4"
             >
               <div>
@@ -60,8 +61,8 @@ export default function ProofHistory({
               </div>
 
               <button
-                onClick={() => handleDelete(proof._id)}
-                className="rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-500 cursor-pointer"
+                onClick={() => handleDelete(proof.id)}
+                className="rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-500"
               >
                 Delete
               </button>
