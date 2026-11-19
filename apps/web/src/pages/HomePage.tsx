@@ -101,31 +101,35 @@ function HomePage() {
   return (
     <main className="h-screen overflow-hidden bg-slate-950 text-white flex flex-col">
       {/* Fixed Header */}
-      <header className="shrink-0 border-b border-slate-800 px-8 py-3 z-10 bg-slate-950">
-        <h1 className="text-2xl font-bold">ProofFlow</h1>
-        <p className="mt-1 text-sm text-slate-400">
+      <header className="shrink-0 border-b border-slate-800 px-4 sm:px-6 lg:px-8 py-3 z-10 bg-slate-950">
+        <h1 className="text-xl sm:text-2xl font-bold">ProofFlow</h1>
+        <p className="mt-1 text-xs sm:text-sm text-slate-400">
           Interactive propositional logic workspace.
         </p>
       </header>
 
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden flex-col md:flex-row">
         {/* Left Sidebar */}
-        <aside className="w-72 shrink-0 border-r border-slate-800 overflow-y-auto ">
-          <div className="p-5">
+        <aside className="w-full md:w-60 lg:w-80 shrink-0 border-b md:border-b-0 md:border-r border-slate-800 overflow-hidden flex flex-col min-h-0 max-h-48 md:max-h-none">
+          <div className="p-3 sm:p-5 flex-1 min-h-0 overflow-hidden">
             <ProofHistory refreshTrigger={historyRefresh} />
           </div>
         </aside>
 
         {/* Main Workspace */}
-        <section className="flex-1 min-w-0 overflow-y-auto ">
-          <div className="mx-auto w-full max-w-6xl px-6 py-8 md:px-10">
-            <h2 className="text-2xl font-semibold">Welcome to ProofFlow</h2>
+        <section className="flex-1 min-w-0 min-h-0 overflow-y-auto">
+          <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-10">
+            <h2 className="text-xl sm:text-2xl font-semibold">
+              Welcome to ProofFlow
+            </h2>
 
-            <div className="mt-6">
+            <div className="mt-5 sm:mt-6">
               <ExpressionEditor
                 value={expression}
                 onChange={handleExpressionChange}
               />
+
+              {/* Keep the rest of your existing workspace here */}
 
               <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <ExampleExpressions onSelect={handleExpressionChange} />
